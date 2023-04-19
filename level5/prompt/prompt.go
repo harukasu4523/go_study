@@ -66,7 +66,7 @@ func (prompt *Prompt) selectionNotValid(mode string) {
 
 func (prompt *Prompt) PromptModeSelect() (appmode.AppModeType, error) {
 	for {
-		prompt.PrintlnGreen("モードを選択してください")
+		prompt.PrintlnYellow("〇選択一覧")
 		prompt.PrintlnGreen("購入：Enter / 登録(register)：\"r\" / 商品一覧(list)：\"l\" / 終了(quit)：\"q\"")
 		mode, err := prompt.scan()
 		if err != nil {
@@ -88,10 +88,29 @@ func (prompt *Prompt) PromptModeSelect() (appmode.AppModeType, error) {
 	}
 }
 
-func (prompt *Prompt) PromptRegister() error {
-	prompt.PrintlnGreen("商品の入力をしてください")
-	prompt.PrintlnGreen("商品名,価格,在庫数 のようにカンマ区切りで入力してください")
+func (p *Prompt) ToBeContinue() bool {
 	for {
+		p.PrintlnGreen("続けて入力する場合は:1 終了する場合は:0 を入力してください")
+		input, err := p.scan()
+		if err != nil {
+			p.PrintlnRed("入力エラーが発生しました。再入力してください")
+			continue
+		}
+		if input == "1" {
+			return true
+		} else if input == "0" {
+			return false
+		} else {
+			p.PrintlnRed("1か0で入力してください")
+			continue
+		}
+	}
+}
+
+func (prompt *Prompt) PromptRegister(items *item.Items) error {
+	prompt.PrintlnGreen("商品の入力をしてください")
+	for {
+		prompt.PrintlnGreen("商品名,価格,在庫数 のようにカンマ区切りで入力してください")
 		input, err := prompt.scan()
 		if err != nil {
 			prompt.PrintlnRed("商品読み取りに失敗しました")
@@ -103,7 +122,18 @@ func (prompt *Prompt) PromptRegister() error {
 		if err != nil {
 			prompt.PrintlnRed(err.Error())
 			continue
+		} else {
+			if err := items.AddItem(item); err != nil {
+				prompt.PrintlnRed(err.Error())
+			} else {
+				if prompt.ToBeContinue() {
+					continue
+				} else {
+					return nil
+				}
+			}
+			fmt.Println()
 		}
+		return nil
 	}
-	return nil
 }

@@ -18,24 +18,26 @@ func main() {
 	switch mode {
 	case appmode.Register:
 		fmt.Println()
-		prompt.PrintlnGreen(appmode.Register.String())
-		err := prompt.PromptRegister()
+		prompt.PrintlnYellow(appmode.Register.String())
+		err := prompt.PromptRegister(&items)
 		if err != nil {
 			return
 		} else {
-			// 佐治さんのやつだと入力したやつのリストが来ているけどいる？
-			return
+			mode, err = prompt.PromptModeSelect()
+			if err != nil {
+				return
+			}
 		}
 	case appmode.List:
 		fmt.Println()
-		prompt.PrintlnGreen(appmode.List.String())
+		prompt.PrintlnYellow(appmode.List.String())
 		return
 	case appmode.Purchase:
 		fmt.Println()
-		prompt.PrintlnGreen(appmode.Purchase.String())
+		prompt.PrintlnYellow(appmode.Purchase.String())
 		return
 	case appmode.Quit:
-		prompt.PrintlnGreen(appmode.Quit.String())
+		prompt.PrintlnYellow(appmode.Quit.String())
 		return
 	}
 
