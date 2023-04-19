@@ -15,30 +15,33 @@ func main() {
 	if err != nil {
 		return
 	}
-	switch mode {
-	case appmode.Register:
-		fmt.Println()
-		prompt.PrintlnYellow(appmode.Register.String())
-		err := prompt.PromptRegister(&items)
-		if err != nil {
-			return
-		} else {
-			mode, err = prompt.PromptModeSelect()
+	for {
+		switch mode {
+		case appmode.Register:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.Register.String())
+			err := prompt.PromptRegister(&items)
 			if err != nil {
 				return
+			} else {
+				mode, err = prompt.PromptModeSelect()
+				if err != nil {
+					return
+				}
+				continue
 			}
+		case appmode.List:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.List.String())
+			return
+		case appmode.Purchase:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.Purchase.String())
+			return
+		case appmode.Quit:
+			prompt.PrintlnYellow(appmode.Quit.String())
+			return
 		}
-	case appmode.List:
-		fmt.Println()
-		prompt.PrintlnYellow(appmode.List.String())
-		return
-	case appmode.Purchase:
-		fmt.Println()
-		prompt.PrintlnYellow(appmode.Purchase.String())
-		return
-	case appmode.Quit:
-		prompt.PrintlnYellow(appmode.Quit.String())
-		return
 	}
 
 	fmt.Println(mode, err)
