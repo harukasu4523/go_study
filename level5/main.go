@@ -5,9 +5,15 @@ import (
 	"level5/prompt"
 	"level5/types/appmode"
 	"level5/types/item"
+	"level5/database"
+	supa "github.com/nedpals/supabase-go"
 )
 
 func main() {
+	supabaseUrl := "https://fsnczduvycfzvvheleia.supabase.co"
+	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbmN6ZHV2eWNmenZ2aGVsZWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODE5OTQyMTcsImV4cCI6MTk5NzU3MDIxN30.JB4GNlr1uUZUbasHyiwcZQbu4jiQu6KjCUuoCPaUmBo"
+	client := supa.CreateClient(supabaseUrl, supabaseKey)
+
 	items := item.Items{}
 	items.Initialize()
 	prompt := prompt.Prompt{}

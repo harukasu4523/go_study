@@ -10,7 +10,7 @@ import (
 
 type Prompt struct{}
 
-func (prompt *Prompt) scan() (string, error) {
+func (prompt *Prompt) Scan() (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()
 	return scanner.Text(), scanner.Err()
