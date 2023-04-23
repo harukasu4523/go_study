@@ -1,27 +1,37 @@
 package main
 
 import (
-	"fmt"
 	"level5/prompt"
-	"level5/types/appmode"
 	"level5/types/item"
-	"level5/database"
+
 	supa "github.com/nedpals/supabase-go"
 )
 
 func main() {
-	supabaseUrl := "https://fsnczduvycfzvvheleia.supabase.co"
-	supabaseKey := "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzbmN6ZHV2eWNmenZ2aGVsZWlhIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODE5OTQyMTcsImV4cCI6MTk5NzU3MDIxN30.JB4GNlr1uUZUbasHyiwcZQbu4jiQu6KjCUuoCPaUmBo"
+	supabaseUrl := "<SUPABASEURL>"
+	supabaseKey := "<SUPABASEAPIKEY>"
 	client := supa.CreateClient(supabaseUrl, supabaseKey)
 
 	items := item.Items{}
 	items.Initialize()
 	prompt := prompt.Prompt{}
-	mode, err := prompt.PromptModeSelect()
+	userChoice := prompt.SignInOrSignUp()
+	role, err := prompt.PromptModeSelect(client, userChoice)
 	if err != nil {
+		prompt.PrintlnRed(err.Error())
 		return
 	}
-	for {
+	// products内のName,Price,Inventoryをmap
+	// 管理者と一般で選択できるモードを変える。
+	if role == "admin" {
+		// 管理者権限
+		return
+	} else {
+		// 一般モード
+		return
+	}
+	/*
+		for {
 		switch mode {
 		case appmode.Register:
 			fmt.Println()
@@ -48,10 +58,41 @@ func main() {
 			prompt.PrintlnYellow(appmode.Quit.String())
 			return
 		}
-	}
-
-	fmt.Println(mode, err)
+	*/
+	// fmt.Println(mode, err)
 }
+
+/*
+DB設計
+user_roles{
+	id 		string
+	roles string
+}
+products{
+	id				int
+	Name			string
+	Price			int
+	Inventory	int
+}
+cart {
+	id		int
+	product_id int 商品の外部キー
+	quantity	int
+}
+
+
+ログイン
+DB参照して管理者or一般を振り分け
+管理者プロンプト
+ -登録、購入、削除、一覧モード選択
+  -登録
+	-購入
+	-削除
+	-一覧
+一般モード
+ -購入、一覧モード選択
+  -管理者と共同
+*/
 
 //	モード選択プロンプト（空文字で購入、rで登録、lで商品一覧プロンプト）
 //	登録モード（r）なら

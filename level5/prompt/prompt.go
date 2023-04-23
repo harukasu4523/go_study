@@ -3,9 +3,12 @@ package prompt
 import (
 	"bufio"
 	"fmt"
+	"level5/database"
 	"level5/types/appmode"
 	"level5/types/item"
 	"os"
+
+	supa "github.com/nedpals/supabase-go"
 )
 
 type Prompt struct{}
@@ -64,11 +67,59 @@ func (prompt *Prompt) selectionNotValid(mode string) {
 	fmt.Println()
 }
 
-func (prompt *Prompt) PromptModeSelect() (appmode.AppModeType, error) {
+func (p *Prompt) SignInOrSignUp() string {
+	for {
+		p.PrintlnGreen("ログイン:1 登録:2")
+		input, err := p.Scan()
+		if err != nil {
+			p.PrintlnRed("文字の読み取りに失敗しました。\nもう一度入力してください")
+			continue
+		}
+		if input == "1" || input == "2" {
+			return input
+		} else {
+			p.PrintlnRed("1 か 2 を入力してください")
+			continue
+		}
+	}
+}
+
+func (p *Prompt) PromptModeSelect(client *supa.Client, option string) (string, error) {
+	// sign Upならそのままログインした後に無条件で一般を付与
+	db := database.Auth{}
+	for {
+		p.PrintlnGreen("メールアドレスを入力してください")
+		email, mailErr := p.Scan()
+		if mailErr != nil {
+			p.PrintlnRed("文字の読み取りに失敗しました")
+			continue
+		}
+		p.PrintlnGreen("パスワードを入力してください")
+		password, passErr := p.Scan()
+		if passErr != nil {
+			p.PrintlnRed("文字の読み取りに失敗しました")
+			continue
+		}
+		if option == "1" {
+			user, err := db.SignInSupabase(client, email, password)
+			if err != nil {
+				return "err", err
+			}
+			p.PrintlnYellow(user.ID)
+			break
+		} else {
+			break
+		}
+	}
+
+	return "admin", nil
+}
+
+func (prompt *Prompt) PromptModeAdmin() (appmode.AppModeType, error) {
 	for {
 		prompt.PrintlnYellow("〇選択一覧")
 		prompt.PrintlnGreen("購入：Enter / 登録(register)：\"r\" / 商品一覧(list)：\"l\" / 終了(quit)：\"q\"")
-		mode, err := prompt.scan()
+		mode, err := prompt.Scan()
 		if err != nil {
 			return appmode.Purchase, err
 		}
@@ -91,7 +142,7 @@ func (prompt *Prompt) PromptModeSelect() (appmode.AppModeType, error) {
 func (p *Prompt) ToBeContinue() bool {
 	for {
 		p.PrintlnGreen("続けて入力する場合は:1 終了する場合は:0 を入力してください")
-		input, err := p.scan()
+		input, err := p.Scan()
 		if err != nil {
 			p.PrintlnRed("入力エラーが発生しました。再入力してください")
 			continue
@@ -111,7 +162,7 @@ func (prompt *Prompt) PromptRegister(items *item.Items) error {
 	prompt.PrintlnGreen("商品の入力をしてください")
 	for {
 		prompt.PrintlnGreen("商品名,価格,在庫数 のようにカンマ区切りで入力してください")
-		input, err := prompt.scan()
+		input, err := prompt.Scan()
 		if err != nil {
 			prompt.PrintlnRed("商品読み取りに失敗しました")
 			continue
