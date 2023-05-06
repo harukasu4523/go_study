@@ -1,11 +1,52 @@
 package main
 
 import (
+	"fmt"
 	"level5/prompt"
+	"level5/types/appmode"
 	"level5/types/item"
 
 	supa "github.com/nedpals/supabase-go"
 )
+
+func AdminMode(items *item.Items, prompt *prompt.Prompt) {
+	mode, err := prompt.PromptModeAdmin()
+	if err != nil {
+		prompt.PrintlnRed(err.Error())
+		return
+	}
+	for {
+		switch mode {
+		case appmode.Register:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.Register.String())
+			err := prompt.PromptRegister(items)
+			if err != nil {
+				return
+			}else{
+				return
+			}
+			// else {
+			// mode, err = prompt.PromptModeSelect()
+			// if err != nil {
+			// 	return
+			// }
+			// 	continue
+			// }
+		case appmode.List:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.List.String())
+			return
+		case appmode.Purchase:
+			fmt.Println()
+			prompt.PrintlnYellow(appmode.Purchase.String())
+			return
+		case appmode.Quit:
+			prompt.PrintlnYellow(appmode.Quit.String())
+			return
+		}
+	}
+}
 
 func main() {
 	supabaseUrl := "https://fsnczduvycfzvvheleia.supabase.co"
@@ -25,8 +66,11 @@ func main() {
 	// 管理者と一般で選択できるモードを変える。
 	if role == "admin" {
 		// 管理者権限
+		AdminMode(&items, &prompt)
+		fmt.Println("管理者モードです。")
 		return
 	} else {
+		fmt.Println("一般モードです。")
 		// 一般モード
 		return
 	}
