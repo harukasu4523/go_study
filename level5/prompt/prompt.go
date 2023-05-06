@@ -105,7 +105,12 @@ func (p *Prompt) PromptModeSelect(client *supa.Client, option string) (string, e
 			if err != nil {
 				return "err", err
 			}
-			p.PrintlnYellow(user.ID)
+			p.PrintlnGreen("ログイン成功しました。")
+			role, err := db.GetRole(client, user)
+			if err != nil {
+				return "err", err
+			}
+			return role, nil
 			break
 		} else {
 			break

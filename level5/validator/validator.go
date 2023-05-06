@@ -22,7 +22,7 @@ func (validator *Validator) CheckNumeric(name string, value string) (int, error)
 	if err != nil {
 		// エラーが int の範囲外であることを確認
 		if numErr, ok := err.(*strconv.NumError); ok && numErr.Err == strconv.ErrRange {
-			return 0, errors.New("数値が int の範囲を超えています")
+			return 0, errors.New("数値が大きすぎます")
 		} else {
 			return 0, errors.New("数値を入力してください")
 		}
