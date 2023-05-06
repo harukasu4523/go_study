@@ -87,6 +87,7 @@ func (p *Prompt) SignInOrSignUp() string {
 func (p *Prompt) PromptModeSelect(client *supa.Client, option string) (string, error) {
 	// sign Upならそのままログインした後に無条件で一般を付与
 	db := database.Auth{}
+	get := database.Getdata{}
 	for {
 		p.PrintlnGreen("メールアドレスを入力してください")
 		email, mailErr := p.Scan()
@@ -106,6 +107,9 @@ func (p *Prompt) PromptModeSelect(client *supa.Client, option string) (string, e
 				return "err", err
 			}
 			p.PrintlnYellow(user.ID)
+			if get.CheckAuth(client, user){
+				fmt.Println("アドミン")
+			}
 			break
 		} else {
 			break
